@@ -19,7 +19,8 @@ certbot certonly \
     --standalone \
     --preferred-challenges http \
     -d ${DOMAINS//,/ -d } \
-    --keep-until-expiring
+    --keep-until-expiring \
+    --expand
 
 # Generate nginx config
 export PRIMARY_DOMAIN=$(get_primary_domain)
