@@ -17,10 +17,10 @@ certbot certonly \
     --agree-tos \
     --email "${CERTBOT_EMAIL}" \
     --standalone \
-    --preferred-challenges http \
+    --preferred-challenges dns \
     -d ${DOMAINS//,/ -d } \
     --keep-until-expiring \
-    --expand 
+    --expand
 
 # Generate nginx config
 export PRIMARY_DOMAIN=$(get_primary_domain)
