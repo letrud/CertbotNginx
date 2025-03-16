@@ -7,13 +7,17 @@ RUN apk add --no-cache \
     bash \
     python3 \
     py3-pip \
+    py3-certbot \
+    py3-setuptools \
+    py3-wheel \
     openssl
 
-# Install certbot-dns-azure plugin
-RUN pip3 install certbot-dns-azure
+# Create and use virtual environment for certbot-dns-azure
+RUN python3 -m venv /opt/certbot-venv && \
+    /opt/certbot-venv/bin/pip install --no-cache-dir certbot-dns-azure
 
 # Create required directories
-RUN mkdir -p /etc/letsencrypt /var/lib/letsencrypt
+RUN mkdir -p /etc/letsencrypt /var/lib/letsencrypt /etc/azure
 
 # Copy scripts and templates
 COPY nginx.template.conf /etc/nginx/templates/default.conf.template
