@@ -4,7 +4,13 @@ FROM nginx:alpine
 RUN apk add --no-cache \
     certbot \
     certbot-nginx \
-    bash
+    bash \
+    python3 \
+    py3-pip \
+    openssl
+
+# Install certbot-dns-azure plugin
+RUN pip3 install certbot-dns-azure
 
 # Create required directories
 RUN mkdir -p /etc/letsencrypt /var/lib/letsencrypt
