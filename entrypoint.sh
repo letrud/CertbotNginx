@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Function to get primary domain from DOMAINS env var
 get_primary_domain() {
     echo "$DOMAINS" | cut -d',' -f1 | tr -d ' '
@@ -11,13 +10,27 @@ if [ -z "${CERTBOT_EMAIL}" ] || [ -z "${DOMAINS}" ]; then
     exit 1
 fi
 
-# Obtain certificates using certbot's standalone mode
+# Ensure Azure credentials directory exists
+mkdir -p /etc/azure
+
+# Check if Azure credentials exist
+if [ ! -f "/etc/azure/azure.ini" ]; then
+    echo "Error: Azure credentials file not found at /etc/azure/azure.ini"
+    echo "Please mount this file with proper credentials"
+    exit 1
+fi
+
+# Set proper permissions for the credentials file
+chmod 600 /etc/azure/azure.ini
+
+# Obtain certificates using certbot's dns-azure plugin
 certbot certonly \
     --non-interactive \
     --agree-tos \
     --email "${CERTBOT_EMAIL}" \
-    --standalone \
-    --preferred-challenges dns \
+    --authenticator dns-azure \
+    --dns-azure-credentials /etc/azure/azure.ini \
+    --dns-azure-propagation-seconds 120 \
     -d ${DOMAINS//,/ -d } \
     --keep-until-expiring \
     --expand
