@@ -1,15 +1,22 @@
 FROM nginx:latest
 
-# Install required packages
+# Install required packages including snapd
 RUN apt-get update && apt-get install -y \
-    certbot \
-    python3-pip \
-    python3-certbot-nginx \
+    snapd \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install certbot-dns-azure plugin
-RUN pip3 install certbot-dns-azure
+# Set up the snap environment
+RUN mkdir -p /var/lib/snapd/snap && \
+    mkdir -p /snap && \
+    ln -s /var/lib/snapd/snap /snap
+
+# Install Certbot and the DNS Azure plugin via snap
+RUN snap install core && \
+    snap install certbot --classic && \
+    snap install certbot-dns-azure && \
+    snap set certbot trust-plugin-with-root=ok && \
+    snap connect certbot:plugin certbot-dns-azure
 
 # Create required directories
 RUN mkdir -p /etc/letsencrypt /var/lib/letsencrypt /etc/azure
@@ -18,6 +25,9 @@ RUN mkdir -p /etc/letsencrypt /var/lib/letsencrypt /etc/azure
 COPY nginx.template.conf /etc/nginx/templates/default.conf.template
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+# Add snap bin to PATH for entrypoint script
+ENV PATH="/snap/bin:${PATH}"
 
 EXPOSE 80 443
 
