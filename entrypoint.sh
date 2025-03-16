@@ -23,12 +23,8 @@ fi
 # Set proper permissions for the credentials file
 chmod 600 /etc/azure/azure.ini
 
-# Start the snapd service (needed for certbot to work)
-/usr/lib/snapd/snapd &
-sleep 5
-
-# Obtain certificates using certbot's dns-azure plugin
-/snap/bin/certbot certonly \
+# Run certbot from virtual environment
+/opt/certbot-venv/bin/certbot certonly \
     --non-interactive \
     --agree-tos \
     --email "${CERTBOT_EMAIL}" \
