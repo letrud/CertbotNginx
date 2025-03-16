@@ -1,20 +1,15 @@
-FROM nginx:alpine
+FROM nginx:latest
 
 # Install required packages
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y \
     certbot \
-    certbot-nginx \
-    bash \
-    python3 \
-    py3-pip \
-    py3-certbot \
-    py3-setuptools \
-    py3-wheel \
-    openssl
+    python3-pip \
+    python3-certbot-nginx \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Create and use virtual environment for certbot-dns-azure
-RUN python3 -m venv /opt/certbot-venv && \
-    /opt/certbot-venv/bin/pip install --no-cache-dir certbot-dns-azure
+# Install certbot-dns-azure plugin
+RUN pip3 install certbot-dns-azure
 
 # Create required directories
 RUN mkdir -p /etc/letsencrypt /var/lib/letsencrypt /etc/azure
