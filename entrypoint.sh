@@ -20,9 +20,7 @@ certbot certonly \
     --preferred-challenges http \
     -d ${DOMAINS//,/ -d } \
     --keep-until-expiring \
-    --expand \
-    --max-attempts 5 \
-    --retry-with-timer 60
+    --expand 
 
 # Generate nginx config
 export PRIMARY_DOMAIN=$(get_primary_domain)
